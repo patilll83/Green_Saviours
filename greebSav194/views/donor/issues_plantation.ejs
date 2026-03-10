@@ -1,0 +1,60 @@
+<main>
+	<%- include('../partials/volenteerSidebar') %>
+	
+	<div id="main-wrapper">
+		<div class="bg-white shadow-sm p-3">
+			<span class="me-3" id="sidebar-toggler-btn"><i class="fas fa-bars"></i></span>
+			<h5 class="m-0 color-theme d-inline-block">Add Issues of Plantation Area</h5>
+		</div>
+		
+		<form action="/donor/save_issues_plantation" method="POST" class="border m-4 my-3 p-4 bg-white rounded-2 shadow">
+		
+			
+			<div class="row">
+	
+
+                <div class="mb-4 col-sm-6">
+					<label for="quantity" class="form-label">Date</label>
+					<input type="date" name="added_date" class="form-control" id="added_date"  required>
+				</div>				
+			</div>	
+
+            <div class="row">
+				<div class="mb-4 col-sm-6">
+					<label for="quantity" class="form-label">Plantation Area</label>
+                    <select  class="form-select" id="plant_name"  name="plant_name">
+                        <% for(let i=0; i<plantation.length; i++) { %>
+                            <option value="<%= plantation[i].name %>"><%= plantation[i].name  %></option>
+                        <% } 
+                        if(plantation.length<1){%>
+                            <option value="nil">NIL</option>
+    
+    
+                            <%}
+                        %>
+                    </select>
+				</div>
+
+                			
+			</div>	
+
+            <div class="row">
+				<div class="mb-4 col-sm-6">
+					<label for="quantity" class="form-label">Issue</label>
+					<input type="text" name="message" class="form-control" id="message"  required>
+				</div>
+
+               			
+			</div>	
+			
+			<button type="submit" class="btn w-75 d-block m-auto mt-4">Submit</button>
+		</form>
+		
+	</div>
+</main>
+
+<script>
+	// const d = new Date();
+	// const dateString = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2) + "T" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+	// document.getElementById("time").value = dateString;
+</script>

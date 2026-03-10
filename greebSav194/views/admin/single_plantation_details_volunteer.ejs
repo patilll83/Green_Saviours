@@ -1,0 +1,107 @@
+<main>
+	<%- include('../partials/adminSidebar') %>
+	
+	<div id="main-wrapper">
+		
+		<div class="bg-white shadow-sm p-3">
+			<span class="me-3" id="sidebar-toggler-btn"><i class="fas fa-bars"></i></span>
+			<h5 class="m-0 color-theme d-inline-block">Volunteers Details of Plantation Area : <%= plantationArea.name %></h5>
+		</div>
+
+   
+       
+            
+            <form action="/admin/add_volunteers_to_plantation" method="POST" class="border m-4 my-3 p-4 bg-white rounded-2 shadow">   
+               
+    
+        
+                
+                
+          
+                
+                <div class="row">
+                    <div class="mb-4 col-sm-8">
+                        <input type="hidden" name="plantation_name" id="plantation_name" value="<%=plantationArea.name %>">
+                        <input type="hidden" name="plantation_id" id="plantation_id" value="<%=plantationId %>">                       
+                        <input type="hidden" name="caretaker" id="caretaker" value="<%=plantationArea.caretaker %>">
+                        <input type="hidden" name="address" id="address" value="<%=plantationArea.address %>">
+                        <input type="hidden" name="phone" id="phone" value="<%=plantationArea.phone %>">
+
+                        <input type="hidden" name="row_count" id="row_count" >
+                        <input type="hidden" name="pl_de" id="pl_de" >
+
+
+                        <label for="volunteers" class="form-label">Volunteer Name</label>
+                        <select  class="form-select" id="volunteers"  name="volunteers">
+                            <% 
+                            var jj="";
+                            var jv="";
+
+                            for(let i=0; i<volunteers.length; i++) {
+                                jj=volunteers[i].firstName+" "+volunteers[i].lastName+"<==>"+volunteers[i]._id; 
+                                jv=volunteers[i].firstName+" "+volunteers[i].lastName ; %>
+
+                                <option value="<%= jj %>"><%=  jv %></option>
+                            <% } 
+                            if(volunteers.length<1){%>
+                                <option value="nil">NIL</option>
+        
+        
+                                <%}
+                            %>
+                        </select>
+                        <!-- <input type="text" name="donation[plant_name]" class="form-control" id="address" placeholder="Enter address.." value="<%= currentUser.address %>" required> -->
+                    </div>
+                    
+             
+
+                    <div class="mb-4 col-sm-4">
+                        <label for="added_date" class="form-label">added Date</label>
+                        <input type="datetime-local" name="added_date" class="form-control" id="added_date"   required>
+                    </div>
+                </div>
+                
+               
+                
+                <button type="button" class="btn w-75 d-block m-auto mt-4" onclick="add_row_volunteer()">Add</button>
+           
+                <div class="col col-sm-10 col-12 m-auto my-4" style="max-height: 75%; overflow: auto;">
+                    <table class="table table-info table-striped table-hover m-0 bg-white" id="table_v">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">volunteer</th>
+                               
+                                <th scope="col">Added Date</th>
+                                <th scope="col">Action</th>
+                                
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                            if(plantation_Volunteer.length > 0){
+                            for(let i=0; i<plantation_Volunteer.length; i++) { %>
+                                <tr>
+                                    <th scope="row"> <%= i+1 %> </th>
+                                    <td> <%= plantation_Volunteer[i].name %> </td>
+                                  
+                                    
+                                    <td> <%= plantation_Volunteer[i].added_date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short"}) %> </td>
+                                    <td>
+                                        <a href="/admin/plantation_details_volunteer/delete/<%= plantationId %>/<%= plantation_Volunteer[i]._id %>" class="btn">Delete</a>
+                                    </td>
+        
+                                    
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
+                </div> 
+        <button type="submit" class="btn w-75 d-block m-auto mt-4" ">SAVE</button>
+    </form>
+
+
+    
+	</div>
+</main>
