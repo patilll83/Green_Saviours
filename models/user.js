@@ -29,16 +29,20 @@ const userSchema = new mongoose.Schema({
 	},
 	role: {
 		type: String,
-		enum: ["admin", "donor", "agent","ngo","volunteer"],
+		enum: ["admin", "donor", "agent", "ngo", "volunteer"],
 		required: true
 	},
 	token: {
 		type: String,
-		default:''
-		
+		default: ''
 	},
-},{
-	timestamp: true,
+	// Admin email confirmation — false until they click the confirmation link in their email
+	isVerified: {
+		type: Boolean,
+		default: true   // true for all roles; set to false only when admin registers
+	}
+}, {
+	timestamps: true,
 });
 
 const User = mongoose.model("users", userSchema);

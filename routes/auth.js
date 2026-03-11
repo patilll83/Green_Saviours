@@ -53,11 +53,55 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 				firstName, lastName, errors, email, password1, password2
 			});
 		}
-		
-		const newUser = new User({ firstName, lastName, email, password:password1, role });
+
 		const salt = bcrypt.genSaltSync(10);
-		const hash = bcrypt.hashSync(newUser.password, salt);
-		newUser.password = hash;
+		const hash = bcrypt.hashSync(password1, salt);
+
+		// ── Admin requires email confirmation before access ──
+		if (role === 'admin') {
+			const confirmToken = random_string.generate(32);
+			const newUser = new User({
+				firstName, lastName, email,
+				password: hash, role,
+				isVerified: false,
+				token: confirmToken
+			});
+			await newUser.save();
+
+			// Send confirmation email
+			const transporter = nodemailer.createTransport({
+				service: 'gmail',
+				auth: { user: process.env.MY_SECRET_EMAILID, pass: process.env.MY_SECRET_PASSWORD }
+			});
+			await transporter.sendMail({
+				from: `"Green Saviours" <${process.env.MY_SECRET_EMAILID}>`,
+				to: email,
+				subject: '🛡️ Confirm Your Admin Account — Green Saviours',
+				html: `
+					<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">
+						<div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:24px;text-align:center">
+							<h2 style="color:#fff;margin:0">🌿 Green Saviours</h2>
+						</div>
+						<div style="padding:32px">
+							<h3 style="color:#2e7d32">Hi ${firstName}, confirm your Admin account</h3>
+							<p style="color:#444;line-height:1.6">You've registered as an <strong>Admin</strong> on Green Saviours. Please confirm your account by clicking the button below. Your account will only be activated after confirmation.</p>
+							<div style="text-align:center;margin:32px 0">
+								<a href="${process.env.BASE_URL}/auth/confirm-admin/${confirmToken}" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px">✅ Confirm Admin Account</a>
+							</div>
+							<p style="color:#888;font-size:12px">If you did not sign up for this, please ignore this email. The account will remain inactive.</p>
+						</div>
+						<div style="background:#f5f5f5;padding:12px;text-align:center">
+							<p style="color:#999;font-size:12px;margin:0">Green Saviours — Planting a better tomorrow 🌱</p>
+						</div>
+					</div>`
+			});
+
+			req.flash("success", "Admin account created! Please check your email and click the confirmation link to activate your account.");
+			return res.redirect("/auth/login");
+		}
+
+		// ── All other roles: register and log in immediately ──
+		const newUser = new User({ firstName, lastName, email, password: hash, role });
 		await newUser.save();
 		req.flash("success", "You are successfully registered and can log in.");
 		res.redirect("/auth/login");
@@ -68,7 +112,28 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 		req.flash("error", "Some error occurred on the server.")
 		res.redirect("back");
 	}
-	
+
+});
+
+// ── Admin Account Confirmation via Email Link ──────────────────────────────
+router.get("/auth/confirm-admin/:token", async (req, res) => {
+	try {
+		const token = req.params.token;
+		const user = await User.findOne({ token: token, role: 'admin', isVerified: false });
+
+		if (!user) {
+			req.flash("error", "Confirmation link is invalid or already used.");
+			return res.redirect("/auth/login");
+		}
+
+		await User.findByIdAndUpdate(user._id, { isVerified: true, token: '' });
+		req.flash("success", `Welcome, ${user.firstName}! Your admin account is now active. Please log in.`);
+		res.redirect("/auth/login");
+	} catch (err) {
+		console.log(err);
+		req.flash("error", "Something went wrong. Please try again.");
+		res.redirect("/auth/login");
+	}
 });
 
 router.get("/auth/login", middleware.ensureNotLoggedIn, (req,res) => {
@@ -302,8 +367,13 @@ router.post("/auth/login", middleware.ensureNotLoggedIn,
 		failureRedirect: "/auth/login",
 		failureFlash: true,
 		successFlash: true
-	}), (req,res) => {
-
+	}), async (req, res) => {
+		// Block unverified admin accounts
+		if (req.user.role === 'admin' && !req.user.isVerified) {
+			req.logout();
+			req.flash("warning", "⚠️ Your admin account is not yet confirmed. Please check your email and click the confirmation link.");
+			return res.redirect("/auth/login");
+		}
 		res.redirect(req.session.returnTo || `/${req.user.role}/dashboard`);
 	}
 );
