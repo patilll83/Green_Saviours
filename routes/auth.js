@@ -112,10 +112,26 @@ async (req,res)=>{
 
 
 		  let mailOptions = {
-			from: process.env.MY_SECRET_EMAILID,
-			to:email,
-			subject:'Verify Email',
-			html:'hello your Email Id is verified. please click here to register <a href="http://localhost:5000/auth/signup"> REGISTER  </a>'
+			from: `"Green Saviours" <${process.env.MY_SECRET_EMAILID}>`,
+			to: email,
+			subject: '✅ Email Verified — Green Saviours',
+			html: `
+				<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">
+					<div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:24px;text-align:center">
+						<h2 style="color:#fff;margin:0">🌿 Green Saviours</h2>
+					</div>
+					<div style="padding:32px">
+						<h3 style="color:#2e7d32">Email Verified!</h3>
+						<p style="color:#444;line-height:1.6">Your email address has been verified successfully. You can now register and join our mission to make the Earth greener!</p>
+						<div style="text-align:center;margin:32px 0">
+							<a href="${process.env.BASE_URL}/auth/signup" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px">Register Now</a>
+						</div>
+						<p style="color:#888;font-size:12px">If you did not request this, please ignore this email.</p>
+					</div>
+					<div style="background:#f5f5f5;padding:12px;text-align:center">
+						<p style="color:#999;font-size:12px;margin:0">Green Saviours — Planting a better tomorrow 🌱</p>
+					</div>
+				</div>`
 			};
 
 			transporter.sendMail(mailOptions, function (err1, info) {
@@ -178,10 +194,26 @@ async (req,res)=>{
 
 
 		  let mailOptions = {
-			from: process.env.MY_SECRET_EMAILID,
-			to:email,
-			subject:'Reset Password',
-			html:'hello '+user.firstName+' please click here to reset password  <a href="http://localhost:5000/auth/reset_password/token/'+randomString+'"> reset password   </a>'
+			from: `"Green Saviours" <${process.env.MY_SECRET_EMAILID}>`,
+			to: email,
+			subject: '🔐 Reset Your Password — Green Saviours',
+			html: `
+				<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">
+					<div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:24px;text-align:center">
+						<h2 style="color:#fff;margin:0">🌿 Green Saviours</h2>
+					</div>
+					<div style="padding:32px">
+						<h3 style="color:#2e7d32">Hi ${user.firstName},</h3>
+						<p style="color:#444;line-height:1.6">We received a request to reset your password. Click the button below to set a new password. This link is valid for a limited time.</p>
+						<div style="text-align:center;margin:32px 0">
+							<a href="${process.env.BASE_URL}/auth/reset_password/token/${randomString}" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px">Reset Password</a>
+						</div>
+						<p style="color:#888;font-size:12px">If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+					</div>
+					<div style="background:#f5f5f5;padding:12px;text-align:center">
+						<p style="color:#999;font-size:12px;margin:0">Green Saviours — Planting a better tomorrow 🌱</p>
+					</div>
+				</div>`
 			};
 
 			transporter.sendMail(mailOptions, function (err1, info) {
