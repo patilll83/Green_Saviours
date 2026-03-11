@@ -6,7 +6,7 @@ const middleware = {
 		req.flash("warning", "Please log in first to continue");
 		res.redirect("/auth/login");
 	},
-	
+
 	ensureAdminLoggedIn: (req, res, next) => {
 		if(req.isUnauthenticated()) {
 			req.session.returnTo = req.originalUrl;
@@ -19,7 +19,7 @@ const middleware = {
 		}
 		next();
 	},
-	
+
 	ensureDonorLoggedIn: (req, res, next) => {
 		if(req.isUnauthenticated()) {
 			req.session.returnTo = req.originalUrl;
@@ -32,6 +32,7 @@ const middleware = {
 		}
 		next();
 	},
+
 	ensureNgoLoggedIn: (req, res, next) => {
 		if(req.isUnauthenticated()) {
 			req.session.returnTo = req.originalUrl;
@@ -44,7 +45,7 @@ const middleware = {
 		}
 		next();
 	},
-	
+
 	ensureAgentLoggedIn: (req, res, next) => {
 		if(req.isUnauthenticated()) {
 			req.session.returnTo = req.originalUrl;
@@ -58,6 +59,7 @@ const middleware = {
 		next();
 	},
 
+	// Accepts role "volunteer" only
 	ensureVolenteerLoggedIn: (req, res, next) => {
 		if(req.isUnauthenticated()) {
 			req.session.returnTo = req.originalUrl;
@@ -65,27 +67,29 @@ const middleware = {
 			return res.redirect("/auth/login");
 		}
 		if(req.user.role != "volunteer") {
-			req.flash("warning", "This route is allowed for volunteer only!!");
+			req.flash("warning", "This route is allowed for volunteers only!!");
 			return res.redirect("back");
 		}
 		next();
 	},
-	
+
 	ensureNotLoggedIn: (req, res, next) => {
 		if(req.isAuthenticated()) {
+			// Redirect to the correct dashboard based on role
+			const dashboards = {
+				admin:     "/admin/dashboard",
+				volunteer: "/volunteer/dashboard",
+				donor:     "/donor/dashboard",
+				agent:     "/agent/dashboard",
+				ngo:       "/ngo/dashboard",
+			};
+			const dest = dashboards[req.user.role] || "/";
 			req.flash("warning", "Please logout first to continue");
-			if(req.user.role == "admin")
-				return res.redirect("/admin/dashboard");
-			if(req.user.role == "volunteer")
-				return res.redirect("/volunteer/dashboard");
-
-				if(req.user.role == "donor")
-				return res.redirect("/donor/dashboard");
-			
+			return res.redirect(dest);
 		}
 		next();
 	}
-	
+
 }
 
-module.exports = middleware;
+module.exports = middleware;
