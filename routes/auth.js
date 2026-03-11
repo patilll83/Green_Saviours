@@ -370,18 +370,23 @@ router.post("/auth/login", middleware.ensureNotLoggedIn,
 	}), async (req, res) => {
 		// Block unverified admin accounts
 		if (req.user.role === 'admin' && !req.user.isVerified) {
-			req.logout();
-			req.flash("warning", "⚠️ Your admin account is not yet confirmed. Please check your email and click the confirmation link.");
-			return res.redirect("/auth/login");
+			req.logout((err) => {
+				if (err) console.error(err);
+				req.flash("warning", "⚠️ Your admin account is not yet confirmed. Please check your email and click the confirmation link.");
+				res.redirect("/auth/login");
+			});
+			return;
 		}
 		res.redirect(req.session.returnTo || `/${req.user.role}/dashboard`);
 	}
 );
 
-router.get("/auth/logout", (req,res) => {
-	req.logout();
-	req.flash("success", "Logged-out successfully")
-	res.redirect("/");
+router.get("/auth/logout", (req, res) => {
+	req.logout((err) => {
+		if (err) console.error(err);
+		req.flash("success", "Logged-out successfully");
+		res.redirect("/");
+	});
 });
 
 
