@@ -11,15 +11,12 @@ const homeRoutes = require("./routes/home.js");
 const authRoutes = require("./routes/auth.js");
 const adminRoutes = require("./routes/admin.js");
 const donorRoutes = require("./routes/donor.js");
-// const imageRoutes = require("./routes/imageupload.js");
+const volunteerRoutes = require("./routes/volunteer.js");
 require("dotenv").config();
 require("./config/dbConnection.js")();
 require("./config/passport.js")(passport);
-const BODY_PARSER = require("body-parser");
 
 
-app.use(BODY_PARSER.urlencoded({ extended: true }));
-app.use(BODY_PARSER.json());
 
 app.set("view engine", "ejs");
 app.use(expressLayouts);
@@ -61,12 +58,18 @@ app.use(homeRoutes);
 app.use(authRoutes);
 app.use(donorRoutes);
 app.use(adminRoutes);
-// app.use(agentRoutes);
+app.use(volunteerRoutes);
 
-// console.log(adminRoutes);
-// app.use((req,res) => {
-// 	res.status(404).render("404page", { title: "Page not found" });
-// });
+// 404 Handler — must come AFTER all routes
+app.use((req, res) => {
+	res.status(404).render("404page", { title: "Page not found" });
+});
+
+// Global Error Handler — catches errors thrown by route handlers
+app.use((err, req, res, next) => {
+	console.error(err.stack);
+	res.status(500).send("Something went wrong. Please try again later.");
+});
 
 
 const port = process.env.PORT || 5000;

@@ -25,10 +25,14 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 	if (!firstName || !lastName || !email || !password1 || !password2) {
 		errors.push({ msg: "Please fill in all the fields" });
 	}
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (email && !emailRegex.test(email)) {
+		errors.push({ msg: "Please enter a valid email address" });
+	}
 	if (password1 != password2) {
 		errors.push({ msg: "Passwords are not matching" });
 	}
-	if (password1.length < 4) {
+	if (password1 && password1.length < 4) {
 		errors.push({ msg: "Password length should be atleast 4 characters" });
 	}
 	if(errors.length > 0) {

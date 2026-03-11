@@ -1,0 +1,73 @@
+<main>
+	<%- include('../partials/volenteerSidebar') %>
+	
+	<div id="main-wrapper">
+		
+		<div class="bg-white shadow-sm p-3">
+			<span class="me-3" id="sidebar-toggler-btn"><i class="fas fa-bars"></i></span>
+			<h5 class="m-0 color-theme d-inline-block">Volunteer Dashboard</h5>
+		</div>
+		
+		<%- include('../partials/alerts') %>
+
+		<div class="m-4">
+
+			<!-- Stats Row -->
+			<div class="d-flex gap-3 flex-wrap mb-4">
+				<div class="bg-white rounded shadow-sm p-3 text-center" style="min-width:180px;">
+					<div class="fs-1 fw-bold color-theme"><%= assignedPlantations.length %></div>
+					<div class="text-muted">Assigned Plantations</div>
+				</div>
+				<div class="bg-white rounded shadow-sm p-3 text-center" style="min-width:180px;">
+					<div class="fs-1 fw-bold color-theme"><%= notification.length %></div>
+					<div class="text-muted">New Notifications</div>
+				</div>
+			</div>
+
+			<!-- Notifications -->
+			<div class="bg-white rounded shadow-sm p-4 mb-4">
+				<h5 class="mb-3">📢 Latest Notifications</h5>
+				<% if (notification.length > 0) { %>
+					<% notification.forEach(function(row) { %>
+						<div class="alert alert-primary d-flex justify-content-between align-items-center">
+							<span><%= row.message %></span>
+							<small class="text-muted ms-3"><%= row.added_date.toLocaleDateString() %></small>
+						</div>
+					<% }) %>
+				<% } else { %>
+					<p class="text-muted">No notifications at this time.</p>
+				<% } %>
+			</div>
+
+			<!-- Assigned Plantations -->
+			<div class="bg-white rounded shadow-sm p-4">
+				<h5 class="mb-3">🌳 My Assigned Plantations</h5>
+				<% if (assignedPlantations.length > 0) { %>
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>#</th>
+									<th>Plantation Name</th>
+									<th>Date Assigned</th>
+								</tr>
+							</thead>
+							<tbody>
+								<% assignedPlantations.forEach(function(p, i) { %>
+									<tr>
+										<td><%= i + 1 %></td>
+										<td><%= p.plantation_name %></td>
+										<td><%= p.added_date ? p.added_date.toLocaleDateString() : 'N/A' %></td>
+									</tr>
+								<% }) %>
+							</tbody>
+						</table>
+					</div>
+				<% } else { %>
+					<p class="text-muted">No plantations assigned yet.</p>
+				<% } %>
+			</div>
+
+		</div>
+	</div>
+</main>
