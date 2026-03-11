@@ -38,9 +38,9 @@ const path = require('path')
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(session({
-	secret: "secret",
-	resave: true,
-	saveUninitialized: true
+	secret: process.env.SESSION_SECRET || "fallback_dev_secret",
+	resave: false,
+	saveUninitialized: false
 }));
 app.use(passport.initialize());
 app.use(passport.session());

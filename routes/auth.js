@@ -101,14 +101,14 @@ async (req,res)=>{
 		let transporter = nodemailer.createTransport({
 			service: 'gmail',
 			auth: {
-			  user: process.env.MY_SECRET_EMAILID, // generated ethereal user
-			  pass: process.env.MY_SECRET_PASSWORD, // generated ethereal password
+			  user: process.env.MY_SECRET_EMAILID,
+			  pass: process.env.MY_SECRET_PASSWORD,
 			},
 		  });
 
 
 		  let mailOptions = {
-			from: 'aditimahale2@gmail.com',
+			from: process.env.MY_SECRET_EMAILID,
 			to:email,
 			subject:'Verify Email',
 			html:'hello your Email Id is verified. please click here to register <a href="http://localhost:5000/auth/signup"> REGISTER  </a>'
@@ -167,14 +167,14 @@ async (req,res)=>{
 		let transporter = nodemailer.createTransport({
 			service: 'gmail',
 			auth: {
-			  user: process.env.MY_SECRET_EMAILID, // generated ethereal user
-			  pass: process.env.MY_SECRET_PASSWORD, // generated ethereal password
+			  user: process.env.MY_SECRET_EMAILID,
+			  pass: process.env.MY_SECRET_PASSWORD,
 			},
 		  });
 
 
 		  let mailOptions = {
-			from: 'aditimahale2@gmail.com',
+			from: process.env.MY_SECRET_EMAILID,
 			to:email,
 			subject:'Reset Password',
 			html:'hello '+user.firstName+' please click here to reset password  <a href="http://localhost:5000/auth/reset_password/token/'+randomString+'"> reset password   </a>'
@@ -232,7 +232,7 @@ const updated_data= await User.findByIdAndUpdate({_id:tokenData._id},{$set:{pass
 
 		}else{
 			req.flash("error", "Token is invalid");
-			res.redirect("/admin/login");
+			res.redirect("/auth/login");
 		}
 
 
