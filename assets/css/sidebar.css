@@ -1,69 +1,114 @@
-main
-{
-	height: calc(100vh - 50px);
-	overflow-y: hidden;
-	display: flex;
+/* ── Dashboard Layout ───────────────────────────────────── */
+main {
+  height: calc(100vh - 70px);
+  overflow-y: hidden;
+  display: flex;
 }
 
-#main-wrapper
-{
-	flex-grow: 1;
-	height: 100%;
-	overflow-y: auto;
+#main-wrapper {
+  flex-grow: 1;
+  height: 100%;
+  overflow-y: auto;
+  background-color: #f0f4f0;
 }
 
-#sidebar
-{
-	height: 100%;
-	width: 228px;	flex-shrink: 0;
-	background-color: #2c3e50;
-	overflow-y: auto;
-	transition: 0.15s linear;
+/* ── Sidebar ────────────────────────────────────────────── */
+#sidebar {
+  height: 100%;
+  width: 240px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #1b2a1c 0%, #2e3d2f 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.15) transparent;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 2px; }
+
+.sidebar-hide { width: 0px !important; }
+
+#sidebar-toggler-btn { cursor: pointer; transition: color 0.2s; }
+#sidebar-toggler-btn:hover { color: #2e7d32 !important; }
+
+/* ── Sidebar Nav ─────────────────────────────────────────── */
+#sidebar ul {
+  list-style-type: none;
+  padding: 12px 0;
+  margin: 0;
 }
 
-#sidebar-toggler-btn
-{
-	cursor: pointer;
+#sidebar ul li {
+  color: rgba(255,255,255,.85);
+  font-size: 14px;
 }
 
-.sidebar-hide
-{
-	width: 0px !important;
+/* Welcome & Logout items centered */
+#sidebar ul li:first-child {
+  text-align: center;
+  padding: 16px 12px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.5);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 6px;
+}
+#sidebar ul li:last-child {
+  text-align: center;
+  padding: 8px 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  margin-top: 6px;
 }
 
-#sidebar ul
-{
-	list-style-type: none;
-	padding: 0;
+/* Links */
+#sidebar ul li a:not(.btn) {
+  text-decoration: none;
+  color: rgba(255,255,255,.72);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 18px;
+  border-left: 3px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  font-size: 14px;
+  font-weight: 400;
 }
 
-#sidebar ul li
-{
-	color: white;
-	font-size: 18px;
+#sidebar ul li a:not(.btn):hover {
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.95);
+  border-left-color: rgba(118,196,66,.5);
 }
 
-#sidebar ul li:first-child, #sidebar ul li:last-child
-{
-	text-align: center;
-	margin: 5px;
+#sidebar ul li a.active {
+  background: rgba(46,125,50,.25);
+  color: #ffffff;
+  border-left-color: #76c442;
+  font-weight: 600;
 }
 
-#sidebar ul li a:not(.btn)
-{
-	text-decoration: none;
-	color: #c5bec9;
-	display: inline-block;
-	width: 100%;
-	padding: 10px 15px;
+/* Logout button */
+#sidebar ul li:last-child .btn {
+  display: inline-block;
+  padding: 7px 22px;
+  font-size: 14px;
+  border-radius: 6px;
 }
-#sidebar ul li a.active
-{
-	color: white;
-	background-color: #595963;
-	border-left: 4px solid var(--theme-color);
-}
-#sidebar ul li a:not(.btn):hover
-{
-	background-color: #656570;
-}
+
+/* ── Mobile: sidebar overlays on small screens ─────────── */
+@media (max-width: 768px) {
+  main { position: relative; }
+
+  #sidebar {
+    position: absolute;
+    z-index: 200;
+    height: 100%;
+    box-shadow: 4px 0 16px rgba(0,0,0,.3);
+  }
+
+  #main-wrapper { width: 100%; }
+}
