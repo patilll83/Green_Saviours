@@ -75,20 +75,26 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 			});
 			await transporter.sendMail({
 				from: `"Green Saviours" <${process.env.MY_SECRET_EMAILID}>`,
-				to: email,
-				subject: '🛡️ Confirm Your Admin Account — Green Saviours',
+				to: process.env.MY_SECRET_EMAILID, // SEND TO MAIN ADMIN!
+				subject: '⚠️ Admin Approval Request — Green Saviours',
 				html: `
 					<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">
 						<div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:24px;text-align:center">
 							<h2 style="color:#fff;margin:0">🌿 Green Saviours</h2>
 						</div>
 						<div style="padding:32px">
-							<h3 style="color:#2e7d32">Hi ${firstName}, confirm your Admin account</h3>
-							<p style="color:#444;line-height:1.6">You've registered as an <strong>Admin</strong> on Green Saviours. Please confirm your account by clicking the button below. Your account will only be activated after confirmation.</p>
+							<h3 style="color:#2e7d32">New Admin Registration Request</h3>
+							<p style="color:#444;line-height:1.6">
+								A new user has registered and requested <strong>Admin</strong> access.
+								<br><br>
+								<strong>Name:</strong> ${firstName} ${lastName}<br>
+								<strong>Email:</strong> ${email}
+							</p>
+							<p style="color:#444;line-height:1.6">To authorize this user and grant them Admin access, click the button below:</p>
 							<div style="text-align:center;margin:32px 0">
-								<a href="${process.env.BASE_URL}/auth/confirm-admin/${confirmToken}" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px">✅ Confirm Admin Account</a>
+								<a href="${process.env.BASE_URL}/auth/confirm-admin/${confirmToken}" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px">✅ Authorize Admin</a>
 							</div>
-							<p style="color:#888;font-size:12px">If you did not sign up for this, please ignore this email. The account will remain inactive.</p>
+							<p style="color:#888;font-size:12px">If you do not recognize this user, simply ignore this email. They will not be granted access.</p>
 						</div>
 						<div style="background:#f5f5f5;padding:12px;text-align:center">
 							<p style="color:#999;font-size:12px;margin:0">Green Saviours — Planting a better tomorrow 🌱</p>
@@ -96,7 +102,7 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 					</div>`
 			});
 
-			req.flash("success", "Admin account created! Please check your email and click the confirmation link to activate your account.");
+			req.flash("success", "Registration successful! Your admin account is pending authorization by the main administrator. You can log in once approved.");
 			return res.redirect("/auth/login");
 		}
 
@@ -115,19 +121,19 @@ router.post("/auth/signup", middleware.ensureNotLoggedIn, async (req,res) => {
 
 });
 
-// ── Admin Account Confirmation via Email Link ──────────────────────────────
+// ── Admin Account Confirmation via Email Link (Clicked by Main Admin) ──────────
 router.get("/auth/confirm-admin/:token", async (req, res) => {
 	try {
 		const token = req.params.token;
 		const user = await User.findOne({ token: token, role: 'admin', isVerified: false });
 
 		if (!user) {
-			req.flash("error", "Confirmation link is invalid or already used.");
+			req.flash("error", "Authorization link is invalid or already used.");
 			return res.redirect("/auth/login");
 		}
 
 		await User.findByIdAndUpdate(user._id, { isVerified: true, token: '' });
-		req.flash("success", `Welcome, ${user.firstName}! Your admin account is now active. Please log in.`);
+		req.flash("success", `Success! You have authorized the admin account for ${user.firstName} ${user.lastName}.`);
 		res.redirect("/auth/login");
 	} catch (err) {
 		console.log(err);
